@@ -6,6 +6,7 @@
           <input type="text" class="form-control" id="lastname" name="lastname" placeholder="Last name"/>
           <h4>Sign here</h4>
           <input id="sign" type="hidden" name='signature'>
+          <input type="hidden" name="_csrf" value="{{csrfToken}}">
           <canvas height="100px" width="600px"></canvas>
           <button>Submit</button>
       </form>

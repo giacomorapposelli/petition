@@ -14,5 +14,6 @@ exports.getSigners = () => {
     return db.query(`SELECT first, last FROM signers`);
 };
 
-
-
+exports.getSignersId = (id) => {
+    return db.query(`SELECT signature FROM signers WHERE id = $1`, [id])
+}
