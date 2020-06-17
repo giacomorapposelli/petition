@@ -3,23 +3,39 @@ body {
     font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
     height: 100vh;
     margin: 0;
-    flex-direction: column;
 }
 
-header {
-    background-color: orange;
-    height: 50px;
-}
 
 .title {
-    text-align: center;
-    margin-top: 50px;
+    margin-top: 40px;
 }
 
 main {
-    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center; 
+    justify-content: center;
+}
+
+.container {
+    text-align: center;
 }
 
 footer {
     height: 40px;
 }
+
+.error {
+    color: tomato;
+}
+
+
+canvas {
+    border: 2px dashed black;
+}
+
+button {
+
+    text-align: center;
+}
+

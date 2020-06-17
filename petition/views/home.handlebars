@@ -1,10 +1,17 @@
 <main>
-<h2 class="title">Sign our petition to make the wearing of Crocs in public places a criminal act in every jurisdiction!</h2>
-<form>
-  <label for="fname">First name:</label><br>
-  <input type="text" id="fname" name="fname"><br>
-  <label for="lname">Last name:</label><br>
-  <input type="text" id="lname" name="lname">
-</form>
-<a href="/petition/signed"><button>Submit</button></a>
+  <div class="container">
+    <h1 class="title">Sign our petition to abolish the TV/RADIO tax in Berlin!</h1> 
+      <form method = 'POST'> 
+          <input type="text" class="form-control" id="firstname" name="firstname" placeholder="First name"/>
+          <input type="text" class="form-control" id="lastname" name="lastname" placeholder="Last name"/>
+          <h4>Sign here</h4>
+          <input id="sign" type="hidden" name='signature'>
+          <canvas height="100px" width="600px"></canvas>
+          <button>Submit</button>
+      </form>
+          {{#if error}}
+          <h2 class="error">All fields are mandatory.</h2>
+          {{/if}}
+  </div>
+  <script src="./canvas.js"></script>
 </main>
