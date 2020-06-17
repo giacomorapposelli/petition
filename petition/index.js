@@ -44,7 +44,7 @@ app.post("/petition", (req, res) => {
             console.log('req.session before values set: ', req.session);
             req.session.dill = 'bigSecret99';
             req.session.permission = true;
-            req.session.userId = result.rows[0].id
+            req.session.userId = signers.rows[0].id
             console.log('req.session after value set: ', req.session);
             res.redirect("/thanks");
         })
