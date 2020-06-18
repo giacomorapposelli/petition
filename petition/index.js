@@ -2,8 +2,10 @@ const express = require('express');
 const app = express();
 const handlebars = require('express-handlebars');
 const cookieSession = require('cookie-session');
-const { getSigners, addSigner, getSignersId} = require("./db")
+const {getSigners, addSigner, getSignersId} = require("./db")
 const csurf = require('csurf');
+const { hash, compare } = require('./bc.js');
+
 
 app.engine("handlebars", handlebars());
 app.set("view engine", "handlebars");
@@ -38,32 +40,44 @@ app.get("/petition", (req, res) => {
     });
 });
 
+// app.post('/register', (req,res) => {
+//     hash('userInput').then(hashedPW => {
+//         console.log(hashedPW)
+//         res.sendStatus(200);
+//     }).catch(err => {
+//         console.log('error in POST/register: ', err);
+//         res.sendStatus(500);
+//     })
+// })
+
+// app.post('/login', (req,res) => {
+    
+// })
+
 app.post("/petition", (req, res) => {
+    console.log(req.body)
     addSigner(req.body.firstname, req.body.lastname, req.body.signature)
-        .then((signers) => {
-            console.log('req.session before values set: ', req.session);
-            req.session.dill = 'bigSecret99';
+    .then((signers) => {
+            console.log('signers: ',signers)
+            req.session.userId = signers.rows[0].id;
             req.session.permission = true;
-            req.session.userId = signers.rows[0].id
-            console.log('req.session after value set: ', req.session);
             res.redirect("/thanks");
         })
         .catch((err) => {
-            res.render("home",{
-                error: true
+            console.log(err);
+            res.render("home", {
+                error: err,
             });
         });
 });
 
 
 app.get("/thanks", (req, res) => {
-    if(req.session.permission) {
-
-        getSignersId(req.session.id)
+    if(req.session.userId) {
+        getSignersId(req.session.userId)
             .then((signers) => {
-                let signature = signers.rows[0].signature;
                 res.render("thanks", {
-                    signature 
+                    signature: signers.rows[0].signature
                 });
             })
             .catch((err) => {
@@ -73,8 +87,9 @@ app.get("/thanks", (req, res) => {
             });
         
     }
-    res.render("/petition");
+    // res.redirect("/petition");
 })
+
 
 app.get("/signers", (req, res) => {
     let signersList = [];
@@ -97,3 +112,4 @@ app.get("/signers", (req, res) => {
 
 
 app.listen(8080, () => console.log("server listening"));
+
