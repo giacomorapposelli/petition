@@ -21,11 +21,11 @@
         }
     });
     
-    canvas.addEventListener("mouseout", () => {
+    canvas.addEventListener("mouseout", event => {
         drawing = false;
     });
 
-    canvas.addEventListener("mouseup", () => {
+    canvas.addEventListener("mouseup", event => {
         drawing = false;
         sign.value = canvas.toDataURL();
     });

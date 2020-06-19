@@ -1,21 +1,29 @@
-const express = require('express');
+const express = require("express");
 const app = express();
-const handlebars = require('express-handlebars');
-const cookieSession = require('cookie-session');
-const {getSigners, addSigner, getSignersId} = require("./db")
-const csurf = require('csurf');
-const { hash, compare } = require('./bc.js');
-
+const handlebars = require("express-handlebars");
+const cookieSession = require("cookie-session");
+const {
+    getSigners,
+    addSigner,
+    getSignersId,
+    addUser,
+    getPassword,
+    hasSigned,
+} = require("./db");
+const csurf = require("csurf");
+const { hash, compare } = require("./bc.js");
 
 app.engine("handlebars", handlebars());
 app.set("view engine", "handlebars");
 
 app.use(express.static("./public"));
 
-app.use(cookieSession({
-    secret: `I'm always angry.`,
-    maxAge: 1000 * 60 * 60 * 24 * 14
-}));
+app.use(
+    cookieSession({
+        secret: `I'm always angry.`,
+        maxAge: 1000 * 60 * 60 * 24 * 14,
+    })
+);
 
 app.use(
     express.urlencoded({
@@ -23,15 +31,15 @@ app.use(
     })
 );
 
-app.use(csurf()); 
+app.use(csurf());
 
-app.use(function(req, res, next) {
+app.use(function (req, res, next) {
     res.locals.csrfToken = req.csrfToken();
     next();
-});   
+});
 
 app.get("/", (req, res) => {
-    res.redirect("/petition");
+    res.redirect("/register");
 });
 
 app.get("/petition", (req, res) => {
@@ -40,25 +48,38 @@ app.get("/petition", (req, res) => {
     });
 });
 
-// app.post('/register', (req,res) => {
-//     hash('userInput').then(hashedPW => {
-//         console.log(hashedPW)
-//         res.sendStatus(200);
-//     }).catch(err => {
-//         console.log('error in POST/register: ', err);
-//         res.sendStatus(500);
-//     })
-// })
+app.get("/register", (req, res) => {
+    res.render("registration", {
+        layout: "main",
+    });
+});
 
-// app.post('/login', (req,res) => {
-    
-// })
+app.get("/login", (req, res) => {
+    res.render("login", {
+        layout: "main",
+    });
+});
+
+app.post("/register", (req, res) => {
+    hash(req.body.password).then((hashedPw) => {
+        addUser(req.body.firstname, req.body.lastname, req.body.email, hashedPw)
+            .then((result) => {
+                req.session.userId = result.rows.id;
+                res.redirect("/petition");
+            })
+            .catch((err) => {
+                res.render("registration", {
+                    error: true,
+                });
+            });
+    });
+});
 
 app.post("/petition", (req, res) => {
-    console.log(req.body)
-    addSigner(req.body.firstname, req.body.lastname, req.body.signature)
-    .then((signers) => {
-            console.log('signers: ',signers)
+    console.log(req.body);
+    addSigner(req.body.signature, req.body.userId)
+        .then((signers) => {
+            console.log("signers: ", signers);
             req.session.userId = signers.rows[0].id;
             req.session.permission = true;
             res.redirect("/thanks");
@@ -66,30 +87,27 @@ app.post("/petition", (req, res) => {
         .catch((err) => {
             console.log(err);
             res.render("home", {
-                error: err,
+                error: true,
             });
         });
 });
 
-
 app.get("/thanks", (req, res) => {
-    if(req.session.userId) {
+    if (req.session.userId) {
         getSignersId(req.session.userId)
             .then((signers) => {
                 res.render("thanks", {
-                    signature: signers.rows[0].signature
+                    signature: signers.rows[0].signature,
                 });
             })
             .catch((err) => {
-                res.render("home",{
-                    error: true
+                res.render("home", {
+                    error: true,
                 });
             });
-        
     }
-    // res.redirect("/petition");
-})
-
+    // res.redirect("/register");
+});
 
 app.get("/signers", (req, res) => {
     let signersList = [];
@@ -108,8 +126,4 @@ app.get("/signers", (req, res) => {
         });
 });
 
-
-
-
 app.listen(8080, () => console.log("server listening"));
-

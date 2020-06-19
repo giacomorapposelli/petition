@@ -1,0 +1,12 @@
+<form method='POST'>
+    <h1 class="title">Register to our cause</h1>
+    <input type="text" class="form-control" id="firstname" name="firstname" placeholder="First name" />
+    <input type="text" class="form-control" id="lastname" name="lastname" placeholder="Last name" />
+    <input type="email" class="form-control" id="email" name="email" placeholder="Your Email" />
+    <input type="password" class="form-control" id="password" name="password" placeholder="Your Password" />
+    <input type="hidden" name="_csrf" value="{{csrfToken}}">
+    <button>Register now</button>
+</form>
+{{#if error}}
+<h2 class="error">All fields are mandatory.</h2>
+{{/if}}
