@@ -2,15 +2,15 @@ const spicedPg = require("spiced-pg");
 const { dbUser, dbPass } = require("./secrets");
 const db = spicedPg(`postgres:${dbUser}:${dbPass}@localhost:5432/petition`);
 
-exports.addSigner = (signature, userId) => {
+exports.addSigner = (userId, signature) => {
     return db.query(
-        `INSERT INTO signers (signature, user_id) VALUES ($1, $2) RETURNING *`,
-        [signature, userId]
+        `INSERT INTO signers (user_id, signature) VALUES ($1, $2) RETURNING ID`,
+        [userId, signature]
     );
 };
 
 exports.getSigners = () => {
-    return db.query(`SELECT first, last FROM signers`);
+    return db.query(`SELECT first, last FROM users`);
 };
 
 exports.getSignersId = (id) => {
@@ -25,5 +25,11 @@ exports.addUser = (firstname, lastname, email, password) => {
 };
 
 exports.getPassword = (email) => {
-    return db.query(`SELECT password FROM users WHERE id = $1`, [email]);
+    return db.query(`SELECT password, id FROM users WHERE email = $1`, [email]);
+};
+
+exports.hasSigned = (userId) => {
+    return db.query(`SELECT signature FROM signers WHERE user_id = $1`, [
+        userId,
+    ]);
 };

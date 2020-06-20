@@ -2,11 +2,11 @@
     <form method='POST'>
         <h1 class="title">Log In</h1>
         <input type="email" class="form-control" id="email" name="email" placeholder="Your Email" />
-        <input type="password" class="form-control" id="password" name="email" placeholder="Your Password" />
+        <input type="password" class="form-control" id="password" name="password" placeholder="Your Password" />
         <input type="hidden" name="_csrf" value="{{csrfToken}}">
         <button>Log In</button>
     </form>
     {{#if error}}
-    <h2 class="error">Email or password aren't correct.</h2>
+    <h2 class="error">Email or Password aren't correct!</h2>
     {{/if}}
 </div>

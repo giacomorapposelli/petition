@@ -61,32 +61,79 @@ app.get("/login", (req, res) => {
 });
 
 app.post("/register", (req, res) => {
-    hash(req.body.password).then((hashedPw) => {
-        addUser(req.body.firstname, req.body.lastname, req.body.email, hashedPw)
-            .then((result) => {
-                req.session.userId = result.rows.id;
-                res.redirect("/petition");
-            })
-            .catch((err) => {
-                res.render("registration", {
-                    error: true,
+    hash(req.body.password)
+        .then((hashedPw) => {
+            addUser(
+                req.body.firstname,
+                req.body.lastname,
+                req.body.email,
+                hashedPw
+            )
+                .then((result) => {
+                    console.log("result: ", result);
+                    req.session.userId = result.rows[0].id;
+                    res.redirect("/petition");
+                })
+                .catch((err) => {
+                    console.log("terror: ", err);
+                    res.render("registration", {
+                        error: true,
+                    });
                 });
-            });
-    });
+        })
+        .catch((err) => {
+            console.log("che succede? :", err);
+        });
 });
 
 app.post("/petition", (req, res) => {
-    console.log(req.body);
-    addSigner(req.body.signature, req.body.userId)
+    addSigner(req.session.userId, req.body.signature)
         .then((signers) => {
-            console.log("signers: ", signers);
             req.session.userId = signers.rows[0].id;
-            req.session.permission = true;
             res.redirect("/thanks");
         })
         .catch((err) => {
             console.log(err);
             res.render("home", {
+                error: true,
+            });
+        });
+});
+
+app.post("/login", (req, res) => {
+    getPassword(req.body.email)
+        .then((result) => {
+            compare(req.body.password, result.rows[0].password).then(
+                (checked) => {
+                    if (checked) {
+                        req.session.userId = result.rows[0].id;
+                        console.log("CHEEEEEEEEEECK: ", result.rows[0]);
+                        hasSigned(req.session.userId)
+                            .then((result) => {
+                                if (result.rows[0]) {
+                                    res.render("thanks", {
+                                        signature: result.rows[0].signature,
+                                    });
+                                } else {
+                                    res.redirect("/petition");
+                                }
+                            })
+                            .catch((err) => {
+                                res.render("login", {
+                                    error: true,
+                                });
+                            });
+                    } else {
+                        res.render("login", {
+                            error: true,
+                        });
+                    }
+                }
+            );
+        })
+        .catch((err) => {
+            console.log("terror: ", err);
+            res.render("login", {
                 error: true,
             });
         });
@@ -101,12 +148,12 @@ app.get("/thanks", (req, res) => {
                 });
             })
             .catch((err) => {
+                console.log("EEEEEEEEEH?: ", err);
                 res.render("home", {
                     error: true,
                 });
             });
     }
-    // res.redirect("/register");
 });
 
 app.get("/signers", (req, res) => {
