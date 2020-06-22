@@ -247,4 +247,4 @@ app.get("/signers/:city", (req, res) => {
         });
 });
 
-app.listen(8080, () => console.log("server listening"));
+app.listen(process.env.PORT || 8080, () => console.log("server listening"));

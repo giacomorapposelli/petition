@@ -1,0 +1,11 @@
+<h2>Now please tell us just a little bit more about yourself</h2>
+<form method='POST'>
+    <input type="text" class="form-control" id="age" name="age" placeholder="Age" />
+    <input type="text" class="form-control" id="city" name="city" placeholder="City" />
+    <input type="text" class="form-control" id="homepage" name="url" placeholder="Homepage" />
+    <input type="submit" value="Continue!">
+    <input type="hidden" name="_csrf" value="{{csrfToken}}">
+</form>
+{{#if error}}
+<h2 class="error">Your url must start with "http://" or "https://"</h2>
+{{/if}}

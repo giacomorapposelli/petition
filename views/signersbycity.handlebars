@@ -1,0 +1,6 @@
+<h2>{{#if onlyOne}} Here's the only one signer from {{signersCity}}! {{else}}Here are all the
+    {{signersCount}} signers from {{signersCity}}! {{/if}} </h2>
+{{#signersListByCity}}
+<p class="signers">{{#if url}}<a href="{{url}}">{{first}} {{last}}</a> {{else}} {{first}} {{last}} {{/if}}
+    {{#if age}} {{age}} {{/if}} </p>
+{{/signersListByCity}}
