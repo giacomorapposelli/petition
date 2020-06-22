@@ -3,8 +3,5 @@
     <h4>Your signature</h4>
     <img src="{{signature}}" alt="">
     <a class="signers-name" href="./signers">See all {{numSigners}} signers.</a>
-    <form method="POST">
-        <input type="submit" value="Edit Your Profile!">
-        <input type="hidden" name="_csrf" value="{{csrfToken}}">
-    </form>
+    <a href="profile/edit">Edit your profile</a>
 </div>

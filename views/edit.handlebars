@@ -1,13 +1,15 @@
 <h2>Update Your Profile</h2>
+{{#dataToEdit}}
 <form method='POST'>
     <input type="text" class="form-control" id="firstname" name="firstname" placeholder="First name"
         value="{{first}}" />
-    <input type="text" class="form-control" id="lastname" name="lastname" placeholder="Last name" />
-    <input type="email" class="form-control" id="email" name="email" placeholder="Your Email" />
+    <input type="text" class="form-control" id="lastname" name="lastname" placeholder="Last name" value="{{last}}" />
+    <input type="email" class="form-control" id="email" name="email" placeholder="Your Email" value="{{email}}" />
     <input type="password" class="form-control" id="password" name="password" placeholder="Your Password" />
-    <input type="text" class="form-control" id="age" name="age" placeholder="Age" />
-    <input type="text" class="form-control" id="city" name="city" placeholder="City" />
-    <input type="text" class="form-control" id="homepage" name="url" placeholder="Homepage" />
+    <input type="text" class="form-control" id="age" name="age" placeholder="Age" value="{{age}}" />
+    <input type="text" class="form-control" id="city" name="city" placeholder="City" value="{{city}}" />
+    <input type="text" class="form-control" id="homepage" name="url" placeholder="Homepage" value="{{url}}" />
     <input type="hidden" name="_csrf" value="{{csrfToken}}">
     <input type="submit" value="Update!">
 </form>
+{{/dataToEdit}}

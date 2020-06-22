@@ -69,11 +69,25 @@ exports.getSignersByCity = (city) => {
     );
 };
 
-exports.getDataToEdit = () => {
+exports.getDataToEdit = (userId) => {
     return db.query(
         `SELECT users.first, users.last, users.email, user_profiles.age, user_profiles.city, user_profiles.url
         FROM users
-        JOIN user_profiles
-        ON users.id = user_profiles.user_id`
+        LEFT JOIN user_profiles
+        ON users.id = user_profiles.user_id
+        WHERE users.id = $1`,
+        [userId]
     );
 };
+
+exports.deleteSignature = (userId) => {
+    return db.query(`DELETE FROM signers WHERE user_id = $1`, [userId]);
+};
+
+// exports.updateWithSamePw = (userId) => {
+//     return db.query(`INSERT INTO users (first, last, )`)
+// }
+
+// exports.updateWithAnotherPw (userId) => {
+//     return db.query
+// }
