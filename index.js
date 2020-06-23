@@ -70,17 +70,6 @@ app.get("/profile", (req, res) => {
     });
 });
 
-app.get("/profile/edit", (req, res) => {
-    getDataToEdit(req.session.userId)
-        .then((result) => {
-            console.log("DIOBOIAAAAAAAA ", result);
-            res.render("edit", {
-                dataToEdit: result.rows[0],
-            });
-        })
-        .catch((err) => console.log("SOCAZZZZZOOOOOOO ", err));
-});
-
 app.post("/profile", (req, res) => {
     if (req.body.url === "") {
         req.body.url = null;
@@ -128,7 +117,7 @@ app.post("/register", (req, res) => {
 app.post("/petition", (req, res) => {
     addSigner(req.body.signature, req.session.userId)
         .then((signers) => {
-            req.session.userId = signers.rows[0].id;
+            req.session.signatureId = signers.rows[0].id;
             res.redirect("/thanks");
         })
         .catch((err) => {
@@ -146,7 +135,7 @@ app.post("/login", (req, res) => {
                 (checked) => {
                     if (checked) {
                         req.session.userId = result.rows[0].id;
-                        console.log("CHEEEEEEEEEECK: ", result.rows[0]);
+                        console.log("CHECK PASSED: ", result.rows[0]);
                         hasSigned(req.session.userId)
                             .then((result) => {
                                 if (result.rows[0]) {
@@ -177,34 +166,27 @@ app.post("/login", (req, res) => {
 });
 
 app.get("/thanks", (req, res) => {
-    if (req.session.userId) {
-        getSignersId(req.session.userId)
-            .then((signers) => {
-                console.log("count: ", signers);
-                console.log(signers.rows.length);
-                res.render("thanks", {
-                    signature: signers.rows[0].signature,
-                });
-            })
-            .catch((err) => {
-                console.log("EEEEEEEEEH?: ", err);
-                res.render("home", {
-                    error: true,
-                });
+    getSignersId(req.session.userId)
+        .then((signers) => {
+            console.log("USER ID IN THANKS: ", req.session.userId);
+            console.log("sinature length: ", signers.rows.length);
+            res.render("thanks", {
+                signature: signers.rows[0].signature,
             });
-    }
+        })
+        .catch((err) => {
+            console.log("EEEEEEEEEH?: ", err);
+            res.render("home", {
+                error: true,
+            });
+        });
 });
 
 app.get("/signers", (req, res) => {
-    let signersList = [];
     getSigners()
         .then((signers) => {
-            for (let i = 0; i < signers.rows.length; i++) {
-                signersList.push(signers.rows[i]);
-                console.log(signersList);
-            }
             res.render("signers", {
-                signersList,
+                signersList: signers.rows,
             });
         })
         .catch((err) => {
@@ -213,16 +195,11 @@ app.get("/signers", (req, res) => {
 });
 
 app.get("/signers/:city", (req, res) => {
-    let signersListByCity = [];
     console.log("cittá:", req.params.city);
     getSignersByCity(req.params.city)
         .then((signers) => {
-            for (let i = 0; i < signers.rows.length; i++) {
-                signersListByCity.push(signers.rows[i]);
-                console.log(signers.rows[i]);
-            }
             res.render("signersbycity", {
-                signersListByCity,
+                signersListByCity: signers.rows,
                 signersCity: signers.rows[0].city,
                 signersCount: signers.rows.length,
                 onlyOne: signers.rows.length === 1,
@@ -236,6 +213,18 @@ app.get("/signers/:city", (req, res) => {
 app.get("/logout", (req, res) => {
     req.session.userId = null;
     res.redirect("/register");
+});
+
+app.get("/profile/edit", (req, res) => {
+    console.log("USER ID IN EDIT: ", req.session.userId);
+    getDataToEdit(req.session.userId)
+        .then((result) => {
+            console.log("DATA TO EDIT ", result.rows[0]);
+            res.render("edit", {
+                dataToEdit: result.rows[0],
+            });
+        })
+        .catch((err) => console.log("Error in edit-profile: ", err));
 });
 
 app.listen(8080, () => console.log("server listening"));

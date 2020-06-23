@@ -28,7 +28,7 @@ exports.getSigners = () => {
 };
 
 exports.getSignersId = (id) => {
-    return db.query(`SELECT signature FROM signers WHERE id = $1`, [id]);
+    return db.query(`SELECT signature FROM signers WHERE user_id = $1;`, [id]);
 };
 
 exports.addUser = (firstname, lastname, email, password) => {
@@ -72,11 +72,11 @@ exports.getSignersByCity = (city) => {
 exports.getDataToEdit = (userId) => {
     return db.query(
         `
-    SELECT users.id, users.first, users.last, users.email, user_profiles.age, user_profiles.city, user_profiles.url
-    FROM users
-    RIGHT JOIN user_profiles
-    ON users.id = user_profiles.user_id
-    WHERE users.id = $1;
+        SELECT users.id, users.first, users.last, users.email, user_profiles.age, user_profiles.city, user_profiles.url
+        FROM users
+        RIGHT JOIN user_profiles
+        ON users.id = user_profiles.user_id
+        WHERE users.id = $1;
     `,
         [userId]
     );
