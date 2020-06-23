@@ -13,6 +13,8 @@ const {
     getSignersByCity,
     getDataToEdit,
     deleteSignature,
+    editCredentials,
+    editProfile,
 } = require("./db");
 const csurf = require("csurf");
 const { hash, compare } = require("./bc.js");
@@ -195,7 +197,6 @@ app.get("/signers", (req, res) => {
 });
 
 app.get("/signers/:city", (req, res) => {
-    console.log("cittá:", req.params.city);
     getSignersByCity(req.params.city)
         .then((signers) => {
             res.render("signersbycity", {
@@ -215,16 +216,58 @@ app.get("/logout", (req, res) => {
     res.redirect("/register");
 });
 
+app.post("/thanks", (req, res) => {
+    deleteSignature(req.session.userId)
+        .then(() => {
+            req.session.signatureId = null;
+            res.redirect("/petition");
+        })
+        .catch((err) => {
+            console.log("ERROR IN DELETE SIGN: ", err);
+        });
+});
+
 app.get("/profile/edit", (req, res) => {
     console.log("USER ID IN EDIT: ", req.session.userId);
     getDataToEdit(req.session.userId)
         .then((result) => {
-            console.log("DATA TO EDIT ", result.rows[0]);
+            console.log("DATA TO EDIT: ", result.rows[0]);
             res.render("edit", {
                 dataToEdit: result.rows[0],
             });
         })
-        .catch((err) => console.log("Error in edit-profile: ", err));
+        .catch((err) => console.log("Error: ", err));
+});
+
+app.post("/profile/edit", (req, res) => {
+    if (req.body.url === "") {
+        req.body.url = null;
+    } else if (
+        !req.body.url.startsWith("http://") ||
+        !req.body.url.startsWith("https://")
+    ) {
+        req.body.url = `http://${req.body.url}`;
+    }
+    editCredentials(
+        req.session.userId,
+        req.body.firstname,
+        req.body.lastname,
+        req.body.email,
+        req.body.password
+    )
+        .then(() => {
+            editProfile(
+                req.body.age,
+                req.body.city,
+                req.body.url,
+                req.session.userId
+            ).then(() => {
+                res.redirect("/thanks");
+            });
+        })
+        .catch((err) => {
+            console.log("ERROR IN EDIT: ", err);
+        });
 });
 
 app.listen(8080, () => console.log("server listening"));
