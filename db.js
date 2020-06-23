@@ -10,10 +10,10 @@ if (process.env.DATABASE_URL) {
     db = spicedPg(`postgres:${dbUser}:${dbPass}@localhost:5432/petition`);
 }
 
-exports.addSigner = (userId, signature) => {
+exports.addSigner = (signature, userId) => {
     return db.query(
-        `INSERT INTO signers (user_id, signature) VALUES ($1, $2) RETURNING ID`,
-        [userId, signature]
+        `INSERT INTO signers (signature, user_id) VALUES ($1, $2) RETURNING id`,
+        [signature, userId]
     );
 };
 
@@ -33,7 +33,7 @@ exports.getSignersId = (id) => {
 
 exports.addUser = (firstname, lastname, email, password) => {
     return db.query(
-        `INSERT INTO users (first, last, email, password) VALUES ($1, $2, $3, $4) RETURNING *`,
+        `INSERT INTO users (first, last, email, password) VALUES ($1, $2, $3, $4) RETURNING id`,
         [firstname, lastname, email, password]
     );
 };
@@ -71,23 +71,17 @@ exports.getSignersByCity = (city) => {
 
 exports.getDataToEdit = (userId) => {
     return db.query(
-        `SELECT users.first, users.last, users.email, user_profiles.age, user_profiles.city, user_profiles.url
-        FROM users
-        LEFT JOIN user_profiles
-        ON users.id = user_profiles.user_id
-        WHERE users.id = $1`,
+        `
+    SELECT users.id, users.first, users.last, users.email, user_profiles.age, user_profiles.city, user_profiles.url
+    FROM users
+    RIGHT JOIN user_profiles
+    ON users.id = user_profiles.user_id
+    WHERE users.id = $1;
+    `,
         [userId]
     );
 };
 
 exports.deleteSignature = (userId) => {
-    return db.query(`DELETE FROM signers WHERE user_id = $1`, [userId]);
+    return db.query(`DELETE FROM signers WHERE user_id = $1;`, [userId]);
 };
-
-// exports.updateWithSamePw = (userId) => {
-//     return db.query(`INSERT INTO users (first, last, )`)
-// }
-
-// exports.updateWithAnotherPw (userId) => {
-//     return db.query
-// }

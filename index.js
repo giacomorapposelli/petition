@@ -73,25 +73,13 @@ app.get("/profile", (req, res) => {
 app.get("/profile/edit", (req, res) => {
     getDataToEdit(req.session.userId)
         .then((result) => {
-            console.log("DATA TO EDIT: ", result);
+            console.log("DIOBOIAAAAAAAA ", result);
             res.render("edit", {
                 dataToEdit: result.rows[0],
             });
         })
-        .catch((err) => {
-            res.render("edit", {
-                error: true,
-            });
-        });
+        .catch((err) => console.log("SOCAZZZZZOOOOOOO ", err));
 });
-
-// app.get("/profile/edit", (req, res) => {
-//     if (req.session.userId) {
-//         if (req.body.password === "") {
-//         } else {
-//         }
-//     }
-// });
 
 app.post("/profile", (req, res) => {
     if (req.body.url === "") {
@@ -112,35 +100,33 @@ app.post("/profile", (req, res) => {
 });
 
 app.post("/register", (req, res) => {
-    if (req.session.userId) {
-        hash(req.body.password)
-            .then((hashedPw) => {
-                addUser(
-                    req.body.firstname,
-                    req.body.lastname,
-                    req.body.email,
-                    hashedPw
-                )
-                    .then((result) => {
-                        console.log("result: ", result);
-                        req.session.userId = result.rows[0].id;
-                        res.redirect("/profile");
-                    })
-                    .catch((err) => {
-                        console.log("terror: ", err);
-                        res.render("registration", {
-                            error: true,
-                        });
+    hash(req.body.password)
+        .then((hashedPw) => {
+            addUser(
+                req.body.firstname,
+                req.body.lastname,
+                req.body.email,
+                hashedPw
+            )
+                .then((result) => {
+                    console.log("result: ", result);
+                    req.session.userId = result.rows[0].id;
+                    res.redirect("/profile");
+                })
+                .catch((err) => {
+                    console.log("terror: ", err);
+                    res.render("registration", {
+                        error: true,
                     });
-            })
-            .catch((err) => {
-                console.log("che succede?: ", err);
-            });
-    }
+                });
+        })
+        .catch((err) => {
+            console.log("che succede? :", err);
+        });
 });
 
 app.post("/petition", (req, res) => {
-    addSigner(req.session.userId, req.body.signature)
+    addSigner(req.body.signature, req.session.userId)
         .then((signers) => {
             req.session.userId = signers.rows[0].id;
             res.redirect("/thanks");
@@ -159,11 +145,6 @@ app.post("/login", (req, res) => {
             compare(req.body.password, result.rows[0].password).then(
                 (checked) => {
                     if (checked) {
-                        console.log(
-                            "DIO STRONZO: ",
-                            req.body.password,
-                            result.rows[0].password
-                        );
                         req.session.userId = result.rows[0].id;
                         console.log("CHEEEEEEEEEECK: ", result.rows[0]);
                         hasSigned(req.session.userId)
@@ -175,7 +156,6 @@ app.post("/login", (req, res) => {
                                 }
                             })
                             .catch((err) => {
-                                console.log("login error: ", err);
                                 res.render("login", {
                                     error: true,
                                 });
@@ -253,4 +233,9 @@ app.get("/signers/:city", (req, res) => {
         });
 });
 
-app.listen(process.env.PORT || 8080, () => console.log("server listening"));
+app.get("/logout", (req, res) => {
+    req.session.userId = null;
+    res.redirect("/register");
+});
+
+app.listen(8080, () => console.log("server listening"));
