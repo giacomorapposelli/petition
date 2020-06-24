@@ -1,18 +1,14 @@
-<div class="container">
+<div class="pet-container">
   <h1 class="title">Sign our petition</h1>
-
   <form method='POST'>
-    {{!-- <input type="text" class="form-control" id="firstname" name="firstname" placeholder="First name" />
-    <input type="text" class="form-control" id="lastname" name="lastname" placeholder="Last name" /> --}}
     <h4>Sign here</h4>
     <input id="sign" type="hidden" name='signature'>
     <input type="hidden" name="_csrf" value="{{csrfToken}}">
     <canvas height="100px" width="600px"></canvas>
-    <button>Submit</button>
+    <input type="submit" value="Submit!" class="button sigbtn">
   </form>
-  {{#if error}}
-  <h2 class="error">All fields are mandatory!</h2>
-  {{/if}}
-  <a href="./logout"><button>Log Out</button></a>
 </div>
+{{#if error}}
+<h2 class="error">All fields are mandatory!</h2>
+{{/if}}
 <script src="./canvas.js"></script>

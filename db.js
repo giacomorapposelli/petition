@@ -87,9 +87,9 @@ exports.getDataToEdit = (userId) => {
 
 exports.editCredentials = (userId, firstname, lastname, email, password) => {
     if (password != "") {
-        hash(password).then((hasedPw) => {
+        return hash(password).then((hasedPw) => {
             return db.query(
-                `UPDATE users SET first = $2, last = $3, email = $4, password = 5$ WHERE users.id = $1;`,
+                `UPDATE users SET first = $2, last = $3, email = $4, password = $5 WHERE users.id = $1;`,
                 [userId, firstname, lastname, email, hasedPw]
             );
         });

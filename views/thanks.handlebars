@@ -1,12 +1,10 @@
-<div class="container">
-    <h2>Thanks for signing our petition to make the wearing....</h2>
+<div class="tnx-container">
+    <h1 class="title">Thank you!</h1>
     <h4>Your signature</h4>
-    <img src="{{signature}}" alt="">
-    <a class="signers-name" href="./signers">See all {{numSigners}} signers.</a>
-    <a href="./profile/edit">Edit your profile</a>
+    <img src="{{signature}}" alt="" class="sign-img">
     <form method="POST">
-        <button>Delete your signature</button>
+        <button class="button delete">Delete your signature</button>
         <input type="hidden" name="_csrf" value="{{csrfToken}}">
     </form>
-    <a href="./logout"><button>Log Out</button></a>
+    <a class="signers-link" href="./signers">See who`s supporting this cause</a>
 </div>

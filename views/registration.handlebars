@@ -1,13 +1,22 @@
-<h1 class="title">Register to our cause</h1>
-<a href="/login"><button>Log In</button></a>
-<form method='POST'>
-    <input type="text" class="form-control" id="firstname" name="firstname" placeholder="First name" />
-    <input type="text" class="form-control" id="lastname" name="lastname" placeholder="Last name" />
-    <input type="email" class="form-control" id="email" name="email" placeholder="Your Email" />
-    <input type="password" class="form-control" id="password" name="password" placeholder="Your Password" />
-    <input type="hidden" name="_csrf" value="{{csrfToken}}">
-    <input type="submit" value="Register Now!">
-</form>
+<h1 class="title">Petition to abolish the TV/RADIO tax in Berlin</h1>
+<h3 class="headline">If you are tired of paying useless taxes and you found this one very annoying,you are in the right
+    place!</h3>
+<div class="img-container">
+    <img src="/radiotax.png" alt="TaxesTaxes" class="image">
+    <div class="bar"></div>
+</div>
+<div class="reg-container">
+
+    <h2 class="reg">Register now!</h2>
+    <form method='POST'>
+        <input type="text" class="form-control" id="firstname" name="firstname" placeholder="First name" />
+        <input type="text" class="form-control" id="lastname" name="lastname" placeholder="Last name" />
+        <input type="email" class="form-control" id="email" name="email" placeholder="Your Email" />
+        <input type="password" class="form-control" id="password" name="password" placeholder="Your Password" />
+        <input type="hidden" name="_csrf" value="{{csrfToken}}">
+        <input type="submit" value="Subscribe!" class="button">
+    </form>
+</div>
 {{#if error}}
 <h2 class="error">All fields are mandatory.</h2>
 {{/if}}

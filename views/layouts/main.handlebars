@@ -7,13 +7,22 @@
     <link rel="stylesheet" href="/style.css">
     <title>Petition</title>
 </head>
+<header>
+    {{#if login}}<a class="log-reg" href="/login">Log In</a>{{/if}}
+    {{#if logout}}<a class="log-reg" href="/logout">Log Out</a>{{/if}}
+    {{#if register}}<a class="log-reg" href="/register">Register</a>{{/if}}
+    {{#if profile}}<a class="log-reg" href="/profile/edit">Edit Your Profile</a>{{/if}}
+
+</header>
 
 <body>
     <main>
         {{{body}}}
     </main>
 
-    <footer>© 2020 El Rappo</footer>
+    <footer>
+        <p class="elrappo">© 2020 El Rappo</p>
+    </footer>
 </body>
 
 </html>

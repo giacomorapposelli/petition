@@ -2,5 +2,6 @@
     {{signersCount}} signers from {{signersCity}}! {{/if}} </h2>
 {{#signersListByCity}}
 <p class="signers">{{#if url}}<a href="{{url}}">{{first}} {{last}}</a> {{else}} {{first}} {{last}} {{/if}}
-    {{#if age}} {{age}} {{/if}} </p>
+    {{#if age}} - {{age}} {{/if}} </p>
 {{/signersListByCity}}
+<a href="/thanks" class="back">Go back to your profile</a>

@@ -1,6 +1,8 @@
-<h2 class="thanks-list">All of these people are with us!</h2>
+<h1 class="thanks-list">All of these people are with us!</h1>
 
 {{#signersList}}
 <p class="signers">{{#if url}}<a href="{{url}}">{{first}} {{last}}</a> {{else}} {{first}} {{last}} {{/if}}
-    {{#if age}} {{age}} {{/if}} {{#if city}} <a href="signers/{{city}}">{{city}}</a> {{/if}}</p>
+    {{#if age}}- {{age}} {{/if}} {{#if city}}- <a href="signers/{{city}}">{{city}}</a> {{/if}}</p>
 {{/signersList}}
+
+<a href="/thanks" class="back">Go back to your profile</a>

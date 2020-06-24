@@ -52,6 +52,8 @@ app.use(requireLoggedInUser);
 
 app.use(function (req, res, next) {
     res.locals.csrfToken = req.csrfToken();
+    res.locals.name = req.session.firstname;
+    console.log("NAME: ", req.session);
     next();
 });
 
@@ -62,24 +64,30 @@ app.get("/", (req, res) => {
 app.get("/petition", (req, res) => {
     res.render("home", {
         layout: "main",
+        logout: true,
+        profile: true,
     });
 });
 
 app.get("/register", requireLoggedOutUser, (req, res) => {
     res.render("registration", {
         layout: "main",
+        login: true,
+        register: true,
     });
 });
 
 app.get("/login", requireLoggedOutUser, (req, res) => {
     res.render("login", {
         layout: "main",
+        register: true,
     });
 });
 
 app.get("/profile", (req, res) => {
     res.render("profile", {
         layout: "main",
+        logout: true,
     });
 });
 
@@ -137,6 +145,7 @@ app.post("/petition", (req, res) => {
             console.log(err);
             res.render("home", {
                 error: true,
+                profile: true,
             });
         });
 });
@@ -187,6 +196,8 @@ app.get("/thanks", requireSignature, (req, res) => {
             console.log("sinature length: ", signers.rows.length);
             res.render("thanks", {
                 signature: signers.rows[0].signature,
+                logout: true,
+                profile: true,
             });
         })
         .catch((err) => {
@@ -202,6 +213,8 @@ app.get("/signers", requireSignature, (req, res) => {
         .then((signers) => {
             res.render("signers", {
                 signersList: signers.rows,
+                logout: true,
+                profile: true,
             });
         })
         .catch((err) => {
@@ -217,6 +230,8 @@ app.get("/signers/:city", requireSignature, (req, res) => {
                 signersCity: signers.rows[0].city,
                 signersCount: signers.rows.length,
                 onlyOne: signers.rows.length === 1,
+                logout: true,
+                profile: true,
             });
         })
         .catch((err) => {
@@ -247,6 +262,7 @@ app.get("/profile/edit", requireLoggedInUser, (req, res) => {
             console.log("DATA TO EDIT: ", result.rows[0]);
             res.render("edit", {
                 dataToEdit: result.rows[0],
+                logout: true,
             });
         })
         .catch((err) => console.log("Error: ", err));
@@ -261,7 +277,7 @@ app.post("/profile/edit", requireLoggedInUser, (req, res) => {
     ) {
         req.body.url = `http://${req.body.url}`;
     }
-    return editCredentials(
+    editCredentials(
         req.session.userId,
         req.body.firstname,
         req.body.lastname,
@@ -269,19 +285,25 @@ app.post("/profile/edit", requireLoggedInUser, (req, res) => {
         req.body.password
     )
         .then(() => {
-            return editProfile(
+            editProfile(
                 req.body.age,
                 req.body.city,
                 req.body.url,
                 req.session.userId
             )
-                .then(() => {
+                .then((result) => {
+                    console.log("EDIT CREDENTIALS: ", result);
                     res.redirect("/thanks");
                 })
-                .catch((err) => console.log("ERROR IN EDIT: ", err));
+                .catch((err) => {
+                    console.log("ERROR IN EDIT CREDENTIALS: ", err);
+                    res.render("/edit", {
+                        error: true,
+                    });
+                });
         })
         .catch((err) => {
-            console.log("ERROR IN EDIT: ", err);
+            console.log("ERROR IN EDIT PROFILE: ", err);
         });
 });
 
