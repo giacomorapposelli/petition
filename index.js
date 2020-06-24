@@ -183,6 +183,7 @@ app.get("/thanks", requireSignature, (req, res) => {
     getSignersId(req.session.userId)
         .then((signers) => {
             console.log("USER ID IN THANKS: ", req.session.userId);
+            console.log("RESULTS: ", signers.rows[0]);
             console.log("sinature length: ", signers.rows.length);
             res.render("thanks", {
                 signature: signers.rows[0].signature,
@@ -260,7 +261,7 @@ app.post("/profile/edit", requireLoggedInUser, (req, res) => {
     ) {
         req.body.url = `http://${req.body.url}`;
     }
-    editCredentials(
+    return editCredentials(
         req.session.userId,
         req.body.firstname,
         req.body.lastname,
@@ -268,7 +269,7 @@ app.post("/profile/edit", requireLoggedInUser, (req, res) => {
         req.body.password
     )
         .then(() => {
-            editProfile(
+            return editProfile(
                 req.body.age,
                 req.body.city,
                 req.body.url,
