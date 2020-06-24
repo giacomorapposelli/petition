@@ -18,6 +18,13 @@ const {
 } = require("./db");
 const csurf = require("csurf");
 const { hash, compare } = require("./bc.js");
+const {
+    requireLoggedOutUser,
+    requireNoSignature,
+    requireSignature,
+    requireLoggedInUser,
+    makeCookiesSafe,
+} = require("./middleware");
 
 app.engine("handlebars", handlebars());
 app.set("view engine", "handlebars");
@@ -39,6 +46,10 @@ app.use(
 
 app.use(csurf());
 
+app.use(makeCookiesSafe);
+
+app.use(requireLoggedInUser);
+
 app.use(function (req, res, next) {
     res.locals.csrfToken = req.csrfToken();
     next();
@@ -54,13 +65,13 @@ app.get("/petition", (req, res) => {
     });
 });
 
-app.get("/register", (req, res) => {
+app.get("/register", requireLoggedOutUser, (req, res) => {
     res.render("registration", {
         layout: "main",
     });
 });
 
-app.get("/login", (req, res) => {
+app.get("/login", requireLoggedOutUser, (req, res) => {
     res.render("login", {
         layout: "main",
     });
@@ -90,7 +101,7 @@ app.post("/profile", (req, res) => {
         });
 });
 
-app.post("/register", (req, res) => {
+app.post("/register", requireLoggedOutUser, (req, res) => {
     hash(req.body.password)
         .then((hashedPw) => {
             addUser(
@@ -167,7 +178,8 @@ app.post("/login", (req, res) => {
         });
 });
 
-app.get("/thanks", (req, res) => {
+app.get("/thanks", requireSignature, (req, res) => {
+    console.log("SIG-ID: ", req.session.signatureId);
     getSignersId(req.session.userId)
         .then((signers) => {
             console.log("USER ID IN THANKS: ", req.session.userId);
@@ -184,7 +196,7 @@ app.get("/thanks", (req, res) => {
         });
 });
 
-app.get("/signers", (req, res) => {
+app.get("/signers", requireSignature, (req, res) => {
     getSigners()
         .then((signers) => {
             res.render("signers", {
@@ -196,7 +208,7 @@ app.get("/signers", (req, res) => {
         });
 });
 
-app.get("/signers/:city", (req, res) => {
+app.get("/signers/:city", requireSignature, (req, res) => {
     getSignersByCity(req.params.city)
         .then((signers) => {
             res.render("signersbycity", {
@@ -211,7 +223,7 @@ app.get("/signers/:city", (req, res) => {
         });
 });
 
-app.get("/logout", (req, res) => {
+app.get("/logout", requireLoggedInUser, (req, res) => {
     req.session.userId = null;
     res.redirect("/register");
 });
@@ -227,7 +239,7 @@ app.post("/thanks", (req, res) => {
         });
 });
 
-app.get("/profile/edit", (req, res) => {
+app.get("/profile/edit", requireLoggedInUser, (req, res) => {
     console.log("USER ID IN EDIT: ", req.session.userId);
     getDataToEdit(req.session.userId)
         .then((result) => {
@@ -239,7 +251,7 @@ app.get("/profile/edit", (req, res) => {
         .catch((err) => console.log("Error: ", err));
 });
 
-app.post("/profile/edit", (req, res) => {
+app.post("/profile/edit", requireLoggedInUser, (req, res) => {
     if (req.body.url === "") {
         req.body.url = null;
     } else if (
@@ -261,9 +273,11 @@ app.post("/profile/edit", (req, res) => {
                 req.body.city,
                 req.body.url,
                 req.session.userId
-            ).then(() => {
-                res.redirect("/thanks");
-            });
+            )
+                .then(() => {
+                    res.redirect("/thanks");
+                })
+                .catch((err) => console.log("ERROR IN EDIT: ", err));
         })
         .catch((err) => {
             console.log("ERROR IN EDIT: ", err);

@@ -106,8 +106,9 @@ exports.editProfile = (age, city, url, userId) => {
         `
         INSERT INTO user_profiles (age, city, url, user_id) 
         VALUES ($1, $2, $3, $4) ON CONFLICT (user_id) 
-        DO UPDATE SET age = $1, city = $2, url = $3`,
-        [age, city, url, userId]
+        DO UPDATE SET age = $1, city = $2, url = $3
+        RETURNING *`,
+        [age || null, city, url, userId]
     );
 };
 
