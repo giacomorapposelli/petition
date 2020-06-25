@@ -127,6 +127,7 @@ app.post("/register", requireLoggedOutUser, (req, res) => {
                     console.log("terror: ", err);
                     res.render("registration", {
                         error: true,
+                        layout: "main",
                     });
                 });
         })
