@@ -105,6 +105,9 @@ app.post("/profile", (req, res) => {
             res.redirect("/petition");
         })
         .catch((err) => {
+            res.render("profile", {
+                error: true,
+            });
             console.log("horror: ", err);
         });
 });
