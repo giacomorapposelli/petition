@@ -113,30 +113,32 @@ app.post("/profile", (req, res) => {
 });
 
 app.post("/register", requireLoggedOutUser, (req, res) => {
-    hash(req.body.password)
-        .then((hashedPw) => {
-            addUser(
-                req.body.firstname,
-                req.body.lastname,
-                req.body.email,
-                hashedPw
-            )
-                .then((result) => {
-                    console.log("result: ", result);
-                    req.session.userId = result.rows[0].id;
-                    res.redirect("/profile");
-                })
-                .catch((err) => {
-                    console.log("terror: ", err);
-                    res.render("registration", {
-                        error: true,
-                        layout: "main",
+    if (req.body.password != "") {
+        hash(req.body.password)
+            .then((hashedPw) => {
+                addUser(
+                    req.body.firstname,
+                    req.body.lastname,
+                    req.body.email,
+                    hashedPw
+                )
+                    .then((result) => {
+                        console.log("result: ", result);
+                        req.session.userId = result.rows[0].id;
+                        res.redirect("/profile");
+                    })
+                    .catch((err) => {
+                        console.log("terror: ", err);
+                        res.render("registration", {
+                            error: true,
+                            layout: "main",
+                        });
                     });
-                });
-        })
-        .catch((err) => {
-            console.log("che succede? :", err);
-        });
+            })
+            .catch((err) => {
+                console.log("che succede? :", err);
+            });
+    }
 });
 
 app.post("/petition", (req, res) => {

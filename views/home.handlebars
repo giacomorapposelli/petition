@@ -5,7 +5,7 @@
     <input id="sign" type="hidden" name='signature'>
     <input type="hidden" name="_csrf" value="{{csrfToken}}">
     <canvas height="100px" width="600px"></canvas>
-    <input type="submit" value="Submit!" class="button sigbtn">
+    <input type="submit" value="Submit!" class="button sigbtn" required>
   </form>
 </div>
 {{#if error}}
